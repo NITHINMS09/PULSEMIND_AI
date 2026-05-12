@@ -19,7 +19,7 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: FRONTEND_URL
-        value: https://pulsemind-ai-frontend.vercel.app
+        value: https://pulsemind-ai-8ng1.vercel.app
 
 databases:
   - name: pulsemind-ai-db
