@@ -5,7 +5,14 @@
   "installCommand": "npm install",
   "framework": "nextjs",
   "regions": ["sin1"],
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_API_URL": "https://pulsemind-ai-backend.onrender.com",
+      "NEXT_PUBLIC_APP_URL": "https://pulsemind-ai-8ng1.vercel.app"
+    }
+  },
   "env": {
-    "NEXT_PUBLIC_API_URL": "https://pulsemind-ai-backend.onrender.com"
+    "NEXT_PUBLIC_API_URL": "https://pulsemind-ai-backend.onrender.com",
+    "NEXT_PUBLIC_APP_URL": "https://pulsemind-ai-8ng1.vercel.app"
   }
 }

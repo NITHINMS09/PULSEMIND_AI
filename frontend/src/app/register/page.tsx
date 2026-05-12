@@ -51,9 +51,13 @@ export default function RegisterPage() {
       await authApi.register(form);
       setSuccess(true);
     } catch (err: any) {
-      const msg = err.response?.data?.message || err.response?.data?.data?.message;
-      if (Array.isArray(msg)) {
-        setError(msg.join(', '));
+      const errBody = err.response?.data;
+      // Backend may send: { message: string | string[], statusCode, error }
+      const msg = errBody?.message || errBody?.data?.message;
+      if (!err.response) {
+        setError('Cannot reach the server. Please check your internet connection.');
+      } else if (Array.isArray(msg)) {
+        setError(msg.join('. '));
       } else {
         setError(msg || 'Registration failed. Please try again.');
       }

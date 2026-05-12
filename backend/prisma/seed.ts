@@ -6,6 +6,15 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('🌱 Seeding PulseMind AI database (Phase 2)...');
 
+  // Idempotency check — skip if demo admin already exists
+  const existingAdmin = await prisma.user.findUnique({
+    where: { email: 'admin@demo.pulsemind.ai' },
+  });
+  if (existingAdmin) {
+    console.log('✅ Demo data already seeded. Skipping to avoid data loss.');
+    return;
+  }
+
   // Clear existing data (reverse dependency order)
   await prisma.teamAvailability.deleteMany();
   await prisma.aIConfidenceScore.deleteMany();

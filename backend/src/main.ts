@@ -18,11 +18,33 @@ async function bootstrap() {
     crossOriginResourcePolicy: { policy: "cross-origin" }
   }));
   app.use(cookieParser());
+
+  const allowedOrigins = [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'https://pulsemind-ai-8ng1.vercel.app',
+    process.env.FRONTEND_URL,
+  ].filter(Boolean);
+
   app.enableCors({
-    origin: true, // Allow all origins for initial deployment, can be tightened later
+    origin: (origin, callback) => {
+      // Allow requests with no origin (Postman, server-to-server)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        // Also allow any vercel.app subdomain for preview deployments
+        if (origin.endsWith('.vercel.app') || origin.endsWith('.onrender.com')) {
+          callback(null, true);
+        } else {
+          callback(null, true); // Permissive for now — can tighten after launch
+        }
+      }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    exposedHeaders: ['Set-Cookie'],
   });
 
   // Global pipes

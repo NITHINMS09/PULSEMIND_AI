@@ -67,7 +67,8 @@ api.interceptors.response.use(
         const { data } = await axios.post(`${API_BASE_URL}/auth/refresh`, {}, {
           withCredentials: true,
         });
-        const newToken = data.accessToken;
+        // Backend wraps response in { success, data, timestamp } via TransformInterceptor
+        const newToken = data.data?.accessToken || data.accessToken;
         localStorage.setItem('accessToken', newToken);
         processQueue(null, newToken);
         if (originalRequest.headers) {

@@ -32,11 +32,20 @@ export default function LoginPage() {
       }
     } catch (err: any) {
       const status = err.response?.status;
-      const message = err.response?.data?.message || err.response?.data?.data?.message;
+      const errBody = err.response?.data;
+      // Backend error shape: { message, error, statusCode } OR { success, data: { message } }
+      const message =
+        errBody?.message ||
+        errBody?.data?.message ||
+        err.message;
       if (status === 403) {
-        setError(message || 'Your account is not active. Please contact your administrator.');
+        setError(message || 'Your account is not yet active. Please contact your administrator.');
+      } else if (status === 401) {
+        setError('Invalid email or password. Please try again.');
+      } else if (status === 0 || !err.response) {
+        setError('Cannot reach the server. Please check your internet connection and try again.');
       } else {
-        setError(message || 'Invalid email or password');
+        setError(message || 'Sign in failed. Please try again.');
       }
     } finally {
       setIsLoading(false);
