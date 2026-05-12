@@ -3,11 +3,13 @@ import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 const getApiBaseUrl = () => {
   if (process.env.NEXT_PUBLIC_API_URL) return process.env.NEXT_PUBLIC_API_URL;
   if (typeof window !== 'undefined') {
-    if (window.location.hostname.includes('vercel.app')) {
-      return 'https://pulsemind-ai-backend.onrender.com';
+    const hostname = window.location.hostname;
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return 'http://localhost:4000';
     }
   }
-  return 'http://localhost:4000';
+  // Default to production for all other cases (Vercel, etc.)
+  return 'https://pulsemind-ai-backend.onrender.com';
 };
 
 const API_BASE_URL = getApiBaseUrl();

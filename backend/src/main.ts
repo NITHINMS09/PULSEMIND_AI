@@ -14,11 +14,9 @@ async function bootstrap() {
     logger: new LoggerService(),
   });
 
-  // ─── CORS: Raw Express middleware FIRST (before Helmet, before NestJS pipeline) ───
-  // This guarantees OPTIONS preflight always gets CORS headers even if a guard
-  // or filter short-circuits the request before NestJS enableCors fires.
+  // ─── CORS: Single, robust middleware ───
   app.use((req: Request, res: Response, next: NextFunction) => {
-    const origin = req.headers.origin as string | undefined;
+    const origin = req.headers.origin;
     const allowedOrigins = [
       'https://pulsemind-ai-8ng1.vercel.app',
       'http://localhost:3000',
@@ -33,6 +31,8 @@ async function bootstrap() {
       if (isAllowed) {
         res.setHeader('Access-Control-Allow-Origin', origin);
       }
+    } else {
+      res.setHeader('Access-Control-Allow-Origin', '*');
     }
 
     res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -43,16 +43,15 @@ async function bootstrap() {
     );
     res.setHeader(
       'Access-Control-Allow-Headers',
-      'Content-Type,Authorization,X-Requested-With,Accept,Origin,Cookie',
+      'Content-Type,Authorization,X-Requested-With,Accept,Origin,Cookie,Access-Control-Allow-Credentials',
     );
     res.setHeader('Access-Control-Expose-Headers', 'Set-Cookie');
     res.setHeader('Access-Control-Max-Age', '86400');
 
-    // Respond immediately to preflight
     if (req.method === 'OPTIONS') {
-      return res.status(204).end();
+      return res.status(204).send();
     }
-    return next();
+    next();
   });
 
   // ─── Security headers (after CORS middleware) ───
@@ -64,16 +63,7 @@ async function bootstrap() {
   );
   app.use(cookieParser());
 
-  // Belt + suspenders: also register via NestJS (handles non-OPTIONS requests)
-  app.enableCors({
-    origin: true,
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
-    exposedHeaders: ['Set-Cookie'],
-    preflightContinue: false,
-    optionsSuccessStatus: 204,
-  });
+  // Removed redundant app.enableCors() to avoid header conflicts
 
   // ─── Global pipes ───
   app.useGlobalPipes(
