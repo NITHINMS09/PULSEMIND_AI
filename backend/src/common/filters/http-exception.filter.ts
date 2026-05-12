@@ -5,12 +5,13 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
+    const request = ctx.getRequest<Request>();
     const response = ctx.getResponse<Response>();
 
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -30,6 +31,29 @@ export class HttpExceptionFilter implements ExceptionFilter {
       }
     } else if (exception instanceof Error) {
       message = exception.message;
+    }
+
+    // ─── Re-apply CORS headers on error responses ───
+    // The Express CORS middleware fires before NestJS processes the request,
+    // but error responses bypass NestJS and go straight through the filter.
+    // Without re-applying here, browser CORS checks fail on 4xx/5xx errors.
+    const origin = request.headers.origin;
+    if (origin) {
+      const allowedOrigins = [
+        'https://pulsemind-ai-8ng1.vercel.app',
+        'http://localhost:3000',
+        'http://localhost:3001',
+      ];
+      const isAllowed =
+        allowedOrigins.includes(origin) ||
+        origin.endsWith('.vercel.app') ||
+        origin.endsWith('.onrender.com');
+
+      if (isAllowed) {
+        response.setHeader('Access-Control-Allow-Origin', origin);
+        response.setHeader('Access-Control-Allow-Credentials', 'true');
+        response.setHeader('Vary', 'Origin');
+      }
     }
 
     response.status(status).json({
