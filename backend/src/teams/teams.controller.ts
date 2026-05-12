@@ -16,7 +16,7 @@ export class TeamsController {
   }
 
   @Get('workload')
-  @Roles('SUPER_ADMIN', 'HR_MANAGER')
+  @Roles('SUPER_ADMIN')
   getWorkload() {
     return this.teamsService.getWorkloadStats();
   }
@@ -27,13 +27,13 @@ export class TeamsController {
   }
 
   @Post()
-  @Roles('SUPER_ADMIN', 'HR_MANAGER')
+  @Roles('SUPER_ADMIN')
   create(@Body() dto: CreateTeamDto) {
     return this.teamsService.create(dto);
   }
 
   @Patch(':id')
-  @Roles('SUPER_ADMIN', 'HR_MANAGER')
+  @Roles('SUPER_ADMIN')
   update(@Param('id') id: string, @Body() dto: UpdateTeamDto) {
     return this.teamsService.update(id, dto);
   }
@@ -48,13 +48,13 @@ export class TeamsController {
   }
 
   @Post(':id/members')
-  @Roles('SUPER_ADMIN', 'HR_MANAGER')
+  @Roles('SUPER_ADMIN')
   addMember(@Param('id') id: string, @Body() dto: AddMemberDto) {
     return this.teamsService.addMember(id, dto.userId, dto.role);
   }
 
   @Delete(':id/members/:userId')
-  @Roles('SUPER_ADMIN', 'HR_MANAGER')
+  @Roles('SUPER_ADMIN')
   removeMember(@Param('id') id: string, @Param('userId') userId: string) {
     return this.teamsService.removeMember(id, userId);
   }

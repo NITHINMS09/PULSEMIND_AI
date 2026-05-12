@@ -108,7 +108,7 @@ export class AuthController {
 
   @Get('pending-users')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('SUPER_ADMIN', 'HR_MANAGER')
+  @Roles('SUPER_ADMIN')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get all pending users' })
   async getPendingUsers() {
@@ -117,7 +117,7 @@ export class AuthController {
 
   @Get('all-users')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('SUPER_ADMIN', 'HR_MANAGER')
+  @Roles('SUPER_ADMIN')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get all users with status' })
   async getAllUsers(@Query('status') status?: string, @Query('page') page?: number, @Query('limit') limit?: number) {
@@ -126,7 +126,7 @@ export class AuthController {
 
   @Post('approve-user')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('SUPER_ADMIN', 'HR_MANAGER')
+  @Roles('SUPER_ADMIN')
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Approve a pending user' })
@@ -136,7 +136,7 @@ export class AuthController {
 
   @Post('reject-user')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('SUPER_ADMIN', 'HR_MANAGER')
+  @Roles('SUPER_ADMIN')
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Reject a pending user' })
@@ -146,7 +146,7 @@ export class AuthController {
 
   @Post('suspend-user')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('SUPER_ADMIN', 'HR_MANAGER')
+  @Roles('SUPER_ADMIN')
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Suspend an active user' })
@@ -156,7 +156,7 @@ export class AuthController {
 
   @Post('activate-user')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('SUPER_ADMIN', 'HR_MANAGER')
+  @Roles('SUPER_ADMIN')
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Reactivate a suspended/rejected user' })

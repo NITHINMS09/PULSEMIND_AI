@@ -2,13 +2,12 @@
 export default function UsersPage() {
   const users = [
     { name: 'Alex Morgan', email: 'admin@demo.pulsemind.ai', role: 'SUPER_ADMIN', dept: 'HR', status: 'Active' },
-    { name: 'Sarah Chen', email: 'hr@demo.pulsemind.ai', role: 'HR_MANAGER', dept: 'HR', status: 'Active' },
     { name: 'James Wilson', email: 'employee@demo.pulsemind.ai', role: 'EMPLOYEE', dept: 'Engineering', status: 'Active' },
     { name: 'Priya Sharma', email: 'dev1@innovex.tech', role: 'EMPLOYEE', dept: 'Engineering', status: 'Active' },
     { name: 'Michael Brown', email: 'dev2@innovex.tech', role: 'TEAM_MEMBER', dept: 'Engineering', status: 'Active' },
     { name: 'Tom Anderson', email: 'sales1@innovex.tech', role: 'TEAM_MEMBER', dept: 'Sales', status: 'Active' },
   ];
-  const roleColors: Record<string,string> = { SUPER_ADMIN: 'badge-danger', HR_MANAGER: 'badge-warning', TEAM_MEMBER: 'badge-info', EMPLOYEE: 'badge-neutral' };
+  const roleColors: Record<string,string> = { SUPER_ADMIN: 'badge-danger', TEAM_MEMBER: 'badge-info', EMPLOYEE: 'badge-neutral' };
   return (
     <div className="max-w-5xl mx-auto">
       <div className="flex items-center justify-between mb-6">

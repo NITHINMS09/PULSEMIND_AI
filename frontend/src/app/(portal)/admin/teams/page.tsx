@@ -10,15 +10,23 @@ export default function TeamsPage() {
     async function load() {
       setLoading(true);
       try {
-        const { data } = await teamsApi.workload();
-        setWorkload(data?.data || data || []);
-      } catch { setWorkload([]); }
+        const response = await teamsApi.workload();
+        const rawData = response.data?.data || response.data || [];
+        setWorkload(Array.isArray(rawData) ? rawData : []);
+      } catch (err) {
+        console.error('Failed to load workload:', err);
+        setWorkload([]);
+      }
       setLoading(false);
     }
     load();
   }, []);
 
-  if (loading) return <div className="flex items-center justify-center min-h-[40vh]"><div className="w-8 h-8 border-3 border-indigo-200 border-t-indigo-600 rounded-full animate-spin" /></div>;
+  if (loading) return (
+    <div className="flex items-center justify-center min-h-[40vh]">
+      <div className="w-8 h-8 border-3 border-brand-200 border-t-brand-600 rounded-full animate-spin" />
+    </div>
+  );
 
   const typeEmojis: Record<string, string> = { TECHNICAL: '🛠️', HR: '👥', SERVICE: '🎯', INFRASTRUCTURE: '🏗️', MANAGEMENT: '📊' };
 
@@ -30,7 +38,11 @@ export default function TeamsPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {workload.map((team) => {
+        {workload.length === 0 ? (
+          <div className="col-span-full py-20 text-center bg-white rounded-xl border border-dashed border-slate-300">
+            <p className="text-slate-400">No active teams found. Teams can be created in the organization settings.</p>
+          </div>
+        ) : workload.map((team) => {
           const utilColor = team.utilizationPercent > 80 ? 'text-red-600' : team.utilizationPercent > 60 ? 'text-amber-600' : 'text-teal-600';
           const utilBg = team.utilizationPercent > 80 ? 'bg-red-400' : team.utilizationPercent > 60 ? 'bg-amber-400' : 'bg-teal-400';
           return (

@@ -35,15 +35,27 @@ export default function TeamDashboardPage() {
   }, [selectedTeam, statusFilter]);
 
   async function loadTeams() {
+    console.log('Loading teams for type:', teamType);
     setLoading(true);
     try {
-      const { data } = await teamsApi.list();
-      const teamList = data?.data || data || [];
-      setTeams(Array.isArray(teamList) ? teamList : []);
+      const response = await teamsApi.list();
+      console.log('Teams API Response:', response.data);
+      const rawData = response.data?.data || response.data || [];
+      const teamList = Array.isArray(rawData) ? rawData : [];
+      setTeams(teamList);
+      
       // Auto-select by route type or first team
-      const match = teamList.find((t: Team) => t.type === teamType) || teamList[0];
-      if (match) setSelectedTeam(match);
-    } catch { setTeams([]); }
+      if (teamList.length > 0) {
+        const match = teamList.find((t: Team) => t.type === teamType) || teamList[0];
+        console.log('Selected Team:', match);
+        if (match) setSelectedTeam(match);
+      } else {
+        console.warn('No teams found in API response');
+      }
+    } catch (err) { 
+      console.error('Failed to load teams:', err);
+      setTeams([]); 
+    }
     setLoading(false);
   }
 
@@ -51,9 +63,13 @@ export default function TeamDashboardPage() {
     try {
       const params: Record<string, string> = {};
       if (statusFilter) params.status = statusFilter;
-      const { data } = await teamsApi.getComplaints(teamId, params);
-      setAssignments(data?.data || data || []);
-    } catch { setAssignments([]); }
+      const response = await teamsApi.getComplaints(teamId, params);
+      const rawData = response.data?.data || response.data || [];
+      setAssignments(Array.isArray(rawData) ? rawData : []);
+    } catch (err) {
+      console.error('Failed to load team complaints:', err);
+      setAssignments([]);
+    }
   }
 
   function openDrawer(complaint: Complaint) {
@@ -76,7 +92,11 @@ export default function TeamDashboardPage() {
     <div>
       {/* Team selector */}
       <div className="flex items-center gap-3 mb-6 flex-wrap">
-        {teams.map((team) => {
+        {teams.length === 0 ? (
+          <div className="w-full py-4 px-6 bg-white rounded-xl border border-dashed border-slate-300 text-center text-sm text-slate-400">
+            No teams available for your organization.
+          </div>
+        ) : teams.map((team) => {
           const tc = TEAM_TYPE_CONFIG[team.type] || TEAM_TYPE_CONFIG.GENERAL;
           return (
             <button key={team.id} onClick={() => setSelectedTeam(team)}
@@ -93,7 +113,7 @@ export default function TeamDashboardPage() {
         })}
       </div>
 
-      {selectedTeam && (
+      {selectedTeam ? (
         <>
           {/* Stats bar */}
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
@@ -196,6 +216,18 @@ export default function TeamDashboardPage() {
             </div>
           </div>
         </>
+      ) : !loading && (
+        <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-dashed border-slate-300">
+          <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center text-3xl mb-4">
+            🔍
+          </div>
+          <h3 className="text-lg font-semibold text-slate-800">No Team Data Available</h3>
+          <p className="text-slate-500 max-w-sm text-center mt-2">
+            {teams.length > 0 
+              ? 'Please select a team from the list above to view its dashboard.' 
+              : 'No teams were found for your organization. Please ensure teams are created in the admin panel.'}
+          </p>
+        </div>
       )}
 
       {/* Complaint Drawer */}

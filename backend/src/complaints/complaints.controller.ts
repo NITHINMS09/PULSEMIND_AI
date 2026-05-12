@@ -32,7 +32,7 @@ export class ComplaintsController {
 
   @Get('kanban')
   @UseGuards(RolesGuard)
-  @Roles('TEAM_MEMBER', 'HR_MANAGER', 'SUPER_ADMIN')
+  @Roles('TEAM_MEMBER', 'SUPER_ADMIN')
   @ApiOperation({ summary: 'Get Kanban board view' })
   getKanban() {
     return this.complaintsService.getKanbanView();
@@ -40,7 +40,7 @@ export class ComplaintsController {
 
   @Get('stats')
   @UseGuards(RolesGuard)
-  @Roles('TEAM_MEMBER', 'HR_MANAGER', 'SUPER_ADMIN')
+  @Roles('TEAM_MEMBER', 'SUPER_ADMIN')
   @ApiOperation({ summary: 'Get complaint stats' })
   getStats() {
     return this.complaintsService.getStats();
@@ -54,7 +54,7 @@ export class ComplaintsController {
 
   @Patch(':id/assign')
   @UseGuards(RolesGuard)
-  @Roles('HR_MANAGER', 'SUPER_ADMIN')
+  @Roles('SUPER_ADMIN')
   @ApiOperation({ summary: 'Assign complaint to team member' })
   assign(
     @Param('id') id: string,
@@ -66,7 +66,7 @@ export class ComplaintsController {
 
   @Post(':id/solution')
   @UseGuards(RolesGuard)
-  @Roles('TEAM_MEMBER', 'HR_MANAGER', 'SUPER_ADMIN')
+  @Roles('TEAM_MEMBER', 'SUPER_ADMIN')
   @ApiOperation({ summary: 'Submit solution (status → WAITING_FOR_EMPLOYEE)' })
   submitSolution(
     @Param('id') id: string,
@@ -89,7 +89,7 @@ export class ComplaintsController {
 
   @Patch(':id/resolve')
   @UseGuards(RolesGuard)
-  @Roles('TEAM_MEMBER', 'HR_MANAGER', 'SUPER_ADMIN')
+  @Roles('TEAM_MEMBER', 'SUPER_ADMIN')
   @ApiOperation({ summary: 'Directly resolve a complaint (admin override)' })
   resolve(
     @Param('id') id: string,
@@ -101,7 +101,7 @@ export class ComplaintsController {
 
   @Post(':id/escalate')
   @UseGuards(RolesGuard)
-  @Roles('TEAM_MEMBER', 'HR_MANAGER', 'SUPER_ADMIN')
+  @Roles('TEAM_MEMBER', 'SUPER_ADMIN')
   @ApiOperation({ summary: 'Escalate a complaint' })
   escalate(@Param('id') id: string, @CurrentUser('id') userId: string) {
     return this.complaintsService.escalate(id, userId);

@@ -63,7 +63,7 @@ export class HealthController {
         email,
         password,
         firstName: 'Admin',
-        lastName: 'Demo',
+        lastName: 'Test',
         employeeId: 'EMP-ADMIN-001',
         role: 'SUPER_ADMIN',
         accountStatus: 'ACTIVE',
@@ -72,22 +72,37 @@ export class HealthController {
       },
     });
 
-    // Create default teams if none exist
-    const teamCount = await this.prisma.team.count();
-    if (teamCount === 0) {
-      await this.prisma.team.createMany({
-        data: [
-          { name: 'Technical Support', type: 'TECHNICAL', organizationId: org.id, leadId: admin.id, maxCapacity: 10 },
-          { name: 'Human Resources', type: 'HR', organizationId: org.id, leadId: admin.id, maxCapacity: 5 },
-          { name: 'Customer Service', type: 'SERVICE', organizationId: org.id, leadId: admin.id, maxCapacity: 15 },
-        ],
+    // Create default teams if they don't exist
+    const teamTypes = [
+      { name: 'Technical Support', type: 'TECHNICAL' },
+      { name: 'HR Resolution', type: 'HR' },
+      { name: 'Service Desk', type: 'SERVICE' },
+      { name: 'Infrastructure Ops', type: 'INFRASTRUCTURE' },
+      { name: 'Management Review', type: 'MANAGEMENT' },
+    ];
+
+    const teams = [];
+    for (const teamData of teamTypes) {
+      let team = await this.prisma.team.findFirst({
+        where: { type: teamData.type, organizationId: org.id }
       });
+      if (!team) {
+        team = await this.prisma.team.create({
+          data: {
+            ...teamData,
+            organizationId: org.id,
+            maxCapacity: 20,
+            isActive: true,
+          }
+        });
+      }
+      teams.push(team);
     }
 
     return {
       message: 'Bootstrap complete',
       admin: { id: admin.id, email: admin.email, role: admin.role, status: admin.accountStatus },
-      teamsCreated: teamCount === 0 ? 3 : 0,
+      teamsCreated: teams.length,
     };
   }
 }

@@ -259,4 +259,9 @@ export const chatApi = {
     api.get(`/complaints/${complaintId}/messages/unread`),
 };
 
+export const systemApi = {
+  bootstrap: () => api.post('/health/bootstrap'),
+  health: () => api.get('/health'),
+};
+
 export default api;

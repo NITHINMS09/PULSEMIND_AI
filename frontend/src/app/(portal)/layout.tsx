@@ -100,7 +100,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
 
         {/* Role Switcher */}
-        {(user.role === 'SUPER_ADMIN' || user.role === 'HR_MANAGER' || user.role === 'TEAM_MEMBER') && (
+        {(user.role === 'SUPER_ADMIN' || user.role === 'TEAM_MEMBER') && (
           <div className="px-4 py-3 border-b border-border">
             <div className="flex gap-1 bg-surface-secondary rounded-lg p-0.5">
               <Link href="/dashboard"
@@ -111,7 +111,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 className={`flex-1 text-center text-xs font-medium py-1.5 rounded-md transition-all ${isTeamView ? 'bg-white shadow-sm text-brand-600' : 'text-text-secondary hover:text-text-primary'}`}>
                 Team
               </Link>
-              {(user.role === 'SUPER_ADMIN' || user.role === 'HR_MANAGER') && (
+              {user.role === 'SUPER_ADMIN' && (
                 <Link href="/admin"
                   className={`flex-1 text-center text-xs font-medium py-1.5 rounded-md transition-all ${isAdmin ? 'bg-white shadow-sm text-brand-600' : 'text-text-secondary hover:text-text-primary'}`}>
                   Admin

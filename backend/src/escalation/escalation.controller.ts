@@ -26,13 +26,13 @@ export class EscalationController {
   }
 
   @Get('escalations')
-  @Roles('SUPER_ADMIN', 'HR_MANAGER')
+  @Roles('SUPER_ADMIN')
   findAll(@Query('level') level?: string) {
     return this.escalationService.findAll({ level: level ? parseInt(level) : undefined });
   }
 
   @Get('escalations/analytics')
-  @Roles('SUPER_ADMIN', 'HR_MANAGER')
+  @Roles('SUPER_ADMIN')
   getAnalytics() {
     return this.escalationService.getAnalytics();
   }

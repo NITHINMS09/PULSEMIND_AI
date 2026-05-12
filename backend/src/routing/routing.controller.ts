@@ -16,31 +16,31 @@ export class RoutingController {
   }
 
   @Post('test')
-  @Roles('SUPER_ADMIN', 'HR_MANAGER')
+  @Roles('SUPER_ADMIN')
   testRouting(@Body() dto: AnalyzeRoutingDto) {
     return this.routingService.testRouting(dto.text);
   }
 
   @Get('rules')
-  @Roles('SUPER_ADMIN', 'HR_MANAGER')
+  @Roles('SUPER_ADMIN')
   findAllRules() {
     return this.routingService.findAllRules();
   }
 
   @Post('rules')
-  @Roles('SUPER_ADMIN', 'HR_MANAGER')
+  @Roles('SUPER_ADMIN')
   createRule(@Body() dto: CreateRoutingRuleDto) {
     return this.routingService.createRule(dto);
   }
 
   @Put('rules/:id')
-  @Roles('SUPER_ADMIN', 'HR_MANAGER')
+  @Roles('SUPER_ADMIN')
   updateRule(@Param('id') id: string, @Body() dto: UpdateRoutingRuleDto) {
     return this.routingService.updateRule(id, dto);
   }
 
   @Delete('rules/:id')
-  @Roles('SUPER_ADMIN', 'HR_MANAGER')
+  @Roles('SUPER_ADMIN')
   deleteRule(@Param('id') id: string) {
     return this.routingService.deleteRule(id);
   }

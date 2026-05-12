@@ -10,13 +10,13 @@ export class SlaController {
   constructor(private slaService: SlaService) {}
 
   @Get('config')
-  @Roles('SUPER_ADMIN', 'HR_MANAGER')
+  @Roles('SUPER_ADMIN')
   getConfig() {
     return this.slaService.getConfig();
   }
 
   @Get('report')
-  @Roles('SUPER_ADMIN', 'HR_MANAGER')
+  @Roles('SUPER_ADMIN')
   getReport() {
     return this.slaService.getPerformanceReport();
   }

@@ -14,7 +14,7 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  @Roles('HR_MANAGER', 'SUPER_ADMIN')
+  @Roles('SUPER_ADMIN')
   @ApiOperation({ summary: 'List all users' })
   findAll(
     @Query('role') role?: string,
@@ -44,14 +44,14 @@ export class UsersController {
   }
 
   @Patch(':id/suspend')
-  @Roles('HR_MANAGER', 'SUPER_ADMIN')
+  @Roles('SUPER_ADMIN')
   @ApiOperation({ summary: 'Suspend a user' })
   suspend(@Param('id') id: string) {
     return this.usersService.suspend(id);
   }
 
   @Patch(':id/activate')
-  @Roles('HR_MANAGER', 'SUPER_ADMIN')
+  @Roles('SUPER_ADMIN')
   @ApiOperation({ summary: 'Activate a user' })
   activate(@Param('id') id: string) {
     return this.usersService.activate(id);

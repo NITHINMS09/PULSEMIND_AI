@@ -26,9 +26,30 @@ const alerts = [
 export default function AdminDashboard() {
   return (
     <div className="max-w-7xl mx-auto space-y-6">
-      <div>
-        <h1 className="font-display text-2xl font-bold text-text-primary">Admin Dashboard</h1>
-        <p className="text-sm text-text-secondary">Organization health overview for Innovex Technologies</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="font-display text-2xl font-bold text-text-primary">Admin Dashboard</h1>
+          <p className="text-sm text-text-secondary">Organization health overview for Innovex Technologies</p>
+        </div>
+        <button 
+          onClick={async () => {
+            if (confirm('This will initialize default teams and demo data. Continue?')) {
+              try {
+                const { systemApi } = await import('@/lib/api');
+                await systemApi.bootstrap();
+                alert('System initialized successfully! Teams are now ready.');
+                window.location.reload();
+              } catch (e) {
+                alert('Initialization failed. Check console for details.');
+                console.error(e);
+              }
+            }
+          }}
+          className="flex items-center gap-2 px-4 py-2 bg-brand-50 text-brand-700 text-sm font-semibold rounded-xl border border-brand-100 hover:bg-brand-100 transition-all"
+        >
+          <Activity className="w-4 h-4" />
+          Setup System Teams
+        </button>
       </div>
 
       {/* KPI Cards */}

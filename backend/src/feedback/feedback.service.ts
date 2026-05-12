@@ -90,7 +90,7 @@ export class FeedbackService {
 
     // Notify admins about new feedback
     const admins = await this.prisma.user.findMany({
-      where: { role: { in: ['SUPER_ADMIN', 'HR_MANAGER'] }, accountStatus: 'APPROVED' },
+      where: { role: 'SUPER_ADMIN', accountStatus: 'APPROVED' },
       select: { id: true },
     });
     for (const admin of admins) {

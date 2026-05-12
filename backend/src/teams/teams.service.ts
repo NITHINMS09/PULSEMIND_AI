@@ -6,6 +6,7 @@ export class TeamsService {
   constructor(private prisma: PrismaService) {}
 
   async findAll() {
+    console.log('[DEBUG] TeamsService.findAll called');
     const teams = await this.prisma.team.findMany({
       where: { isActive: true },
       include: {
@@ -17,7 +18,7 @@ export class TeamsService {
         routingRules: { where: { isActive: true }, select: { id: true, name: true, keywords: true } },
       },
     });
-
+    console.log('[DEBUG] Teams found count:', teams.length);
     return teams.map((t) => ({
       ...t,
       memberCount: t.members.length,

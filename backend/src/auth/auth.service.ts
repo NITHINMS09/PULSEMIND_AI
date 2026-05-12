@@ -402,7 +402,7 @@ export class AuthService {
     try {
       const admins = await this.prisma.user.findMany({
         where: {
-          role: { in: ['SUPER_ADMIN', 'HR_MANAGER'] },
+          role: 'SUPER_ADMIN',
           accountStatus: ACCOUNT_STATUS.APPROVED,
         },
         select: { id: true },
