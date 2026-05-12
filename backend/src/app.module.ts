@@ -20,6 +20,7 @@ import { RoutingModule } from './routing/routing.module';
 import { SlaModule } from './sla/sla.module';
 import { EscalationModule } from './escalation/escalation.module';
 import { ResolutionModule } from './resolution/resolution.module';
+import { HealthController } from './health.controller';
 import configuration from './config/configuration';
 
 @Module({
@@ -63,5 +64,6 @@ import configuration from './config/configuration';
     EscalationModule,
     ResolutionModule,
   ],
+  controllers: [HealthController],
 })
 export class AppModule {}
