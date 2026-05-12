@@ -1,5 +1,9 @@
 'use client';
+import { useState } from 'react';
+import InviteUserModal from '@/components/InviteUserModal';
+
 export default function UsersPage() {
+  const [isInviteOpen, setIsInviteOpen] = useState(false);
   const users = [
     { name: 'Alex Morgan', email: 'admin@demo.pulsemind.ai', role: 'SUPER_ADMIN', dept: 'HR', status: 'Active' },
     { name: 'James Wilson', email: 'employee@demo.pulsemind.ai', role: 'EMPLOYEE', dept: 'Engineering', status: 'Active' },
@@ -8,11 +12,17 @@ export default function UsersPage() {
     { name: 'Tom Anderson', email: 'sales1@innovex.tech', role: 'TEAM_MEMBER', dept: 'Sales', status: 'Active' },
   ];
   const roleColors: Record<string,string> = { SUPER_ADMIN: 'badge-danger', TEAM_MEMBER: 'badge-info', EMPLOYEE: 'badge-neutral' };
+  
   return (
     <div className="max-w-5xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div><h1 className="font-display text-2xl font-bold text-text-primary">User Management</h1><p className="text-sm text-text-secondary">Manage roles and permissions</p></div>
-        <button className="px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700 transition-all">+ Invite User</button>
+        <button 
+          onClick={() => setIsInviteOpen(true)}
+          className="px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700 transition-all"
+        >
+          + Invite User
+        </button>
       </div>
       <div className="card-elevated overflow-hidden">
         <table className="w-full text-sm">
@@ -36,6 +46,12 @@ export default function UsersPage() {
           </tbody>
         </table>
       </div>
+
+      <InviteUserModal 
+        isOpen={isInviteOpen} 
+        onClose={() => setIsInviteOpen(false)} 
+        onSuccess={() => alert('Invitation sent successfully!')}
+      />
     </div>
   );
 }

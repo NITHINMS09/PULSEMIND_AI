@@ -25,7 +25,7 @@ export default function LoginPage() {
       const { data } = await authApi.login(email, password);
       login(data.data.user, data.data.accessToken);
       const role = data.data.user.role;
-      if (role === 'SUPER_ADMIN' || role === 'HR_MANAGER') {
+      if (role === 'SUPER_ADMIN') {
         router.push('/admin');
       } else {
         router.push('/dashboard');
@@ -55,7 +55,6 @@ export default function LoginPage() {
   const fillDemo = (role: string) => {
     const creds: Record<string, { email: string; password: string }> = {
       employee: { email: 'employee@demo.pulsemind.ai', password: 'Demo@2024' },
-      hr: { email: 'hr@demo.pulsemind.ai', password: 'Demo@2024' },
       admin: { email: 'admin@demo.pulsemind.ai', password: 'Demo@2024' },
     };
     setEmail(creds[role].email);
@@ -112,7 +111,6 @@ export default function LoginPage() {
             <div className="flex gap-2">
               {[
                 { label: 'Employee', key: 'employee' },
-                { label: 'HR Manager', key: 'hr' },
                 { label: 'Admin', key: 'admin' },
               ].map((d) => (
                 <button key={d.key} type="button" onClick={() => fillDemo(d.key)}
