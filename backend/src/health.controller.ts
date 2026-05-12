@@ -72,9 +72,22 @@ export class HealthController {
       },
     });
 
+    // Create default teams if none exist
+    const teamCount = await this.prisma.team.count();
+    if (teamCount === 0) {
+      await this.prisma.team.createMany({
+        data: [
+          { name: 'Technical Support', type: 'TECHNICAL', organizationId: org.id, leadId: admin.id, maxCapacity: 10 },
+          { name: 'Human Resources', type: 'HR', organizationId: org.id, leadId: admin.id, maxCapacity: 5 },
+          { name: 'Customer Service', type: 'SERVICE', organizationId: org.id, leadId: admin.id, maxCapacity: 15 },
+        ],
+      });
+    }
+
     return {
       message: 'Bootstrap complete',
       admin: { id: admin.id, email: admin.email, role: admin.role, status: admin.accountStatus },
+      teamsCreated: teamCount === 0 ? 3 : 0,
     };
   }
 }
