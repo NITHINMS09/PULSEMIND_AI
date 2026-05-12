@@ -77,6 +77,7 @@ export interface Feedback {
   user?: User;
   department?: Department;
   confidenceScore?: AIConfidenceScore;
+  aiAnalysis?: AIAnalysis;
 }
 
 export type FeedbackCategory =
