@@ -19,22 +19,36 @@ async function bootstrap() {
   // or filter short-circuits the request before NestJS enableCors fires.
   app.use((req: Request, res: Response, next: NextFunction) => {
     const origin = req.headers.origin as string | undefined;
+    const allowedOrigins = [
+      'https://pulsemind-ai-8ng1.vercel.app',
+      'http://localhost:3000',
+      'http://localhost:3001',
+    ];
 
     if (origin) {
-      res.setHeader('Access-Control-Allow-Origin', origin);
-    } else {
-      res.setHeader('Access-Control-Allow-Origin', '*');
+      const isAllowed = allowedOrigins.includes(origin) || 
+                       origin.endsWith('.vercel.app') || 
+                       origin.endsWith('.onrender.com');
+      
+      if (isAllowed) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+      }
     }
+
     res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
+    res.setHeader('Vary', 'Origin');
+    res.setHeader(
+      'Access-Control-Allow-Methods',
+      'GET,POST,PUT,PATCH,DELETE,OPTIONS',
+    );
     res.setHeader(
       'Access-Control-Allow-Headers',
-      'Content-Type,Authorization,X-Requested-With,Accept,Origin',
+      'Content-Type,Authorization,X-Requested-With,Accept,Origin,Cookie',
     );
     res.setHeader('Access-Control-Expose-Headers', 'Set-Cookie');
     res.setHeader('Access-Control-Max-Age', '86400');
 
-    // Respond immediately to preflight — do NOT let NestJS process OPTIONS
+    // Respond immediately to preflight
     if (req.method === 'OPTIONS') {
       return res.status(204).end();
     }

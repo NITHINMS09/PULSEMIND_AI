@@ -46,7 +46,7 @@ async function main() {
   await prisma.organization.deleteMany();
   await prisma.systemSetting.deleteMany();
 
-  const password = await argon2.hash('Demo@2024');
+  const password = await argon2.hash('Demo@2024!');
 
   // Organization
   const org = await prisma.organization.create({
