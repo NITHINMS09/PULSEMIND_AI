@@ -14,6 +14,12 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const request = ctx.getRequest<Request>();
     const response = ctx.getResponse<Response>();
 
+    // Guard: if headers were already sent (e.g. by CORS preflight middleware),
+    // do NOT attempt to send another response — it would crash the process.
+    if (response.headersSent) {
+      return;
+    }
+
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let message = 'Internal server error';
     let errors: any = null;
@@ -33,11 +39,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
       message = exception.message;
     }
 
-    // ─── Re-apply CORS headers on error responses ───
-    // The Express CORS middleware fires before NestJS processes the request,
-    // but error responses bypass NestJS and go straight through the filter.
-    // Without re-applying here, browser CORS checks fail on 4xx/5xx errors.
-    const origin = request.headers.origin;
+    // Re-apply CORS headers on error responses so browsers can read them
+    const origin = request?.headers?.origin;
     if (origin) {
       const allowedOrigins = [
         'https://pulsemind-ai-8ng1.vercel.app',
