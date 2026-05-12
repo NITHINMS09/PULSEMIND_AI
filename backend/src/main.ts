@@ -3,6 +3,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
 import helmet from 'helmet';
+import { Request, Response, NextFunction } from 'express';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
@@ -13,41 +14,54 @@ async function bootstrap() {
     logger: new LoggerService(),
   });
 
-  // Security
-  app.use(helmet({
-    crossOriginResourcePolicy: { policy: "cross-origin" }
-  }));
-  app.use(cookieParser());
+  // ─── CORS: Raw Express middleware FIRST (before Helmet, before NestJS pipeline) ───
+  // This guarantees OPTIONS preflight always gets CORS headers even if a guard
+  // or filter short-circuits the request before NestJS enableCors fires.
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    const origin = req.headers.origin as string | undefined;
 
-  const allowedOrigins = [
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'https://pulsemind-ai-8ng1.vercel.app',
-    process.env.FRONTEND_URL,
-  ].filter(Boolean);
+    if (origin) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+    } else {
+      res.setHeader('Access-Control-Allow-Origin', '*');
+    }
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
+    res.setHeader(
+      'Access-Control-Allow-Headers',
+      'Content-Type,Authorization,X-Requested-With,Accept,Origin',
+    );
+    res.setHeader('Access-Control-Expose-Headers', 'Set-Cookie');
+    res.setHeader('Access-Control-Max-Age', '86400');
 
-  app.enableCors({
-    origin: (origin, callback) => {
-      // Allow requests with no origin (Postman, server-to-server)
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        // Also allow any vercel.app subdomain for preview deployments
-        if (origin.endsWith('.vercel.app') || origin.endsWith('.onrender.com')) {
-          callback(null, true);
-        } else {
-          callback(null, true); // Permissive for now — can tighten after launch
-        }
-      }
-    },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-    exposedHeaders: ['Set-Cookie'],
+    // Respond immediately to preflight — do NOT let NestJS process OPTIONS
+    if (req.method === 'OPTIONS') {
+      return res.status(204).end();
+    }
+    return next();
   });
 
-  // Global pipes
+  // ─── Security headers (after CORS middleware) ───
+  app.use(
+    helmet({
+      crossOriginResourcePolicy: { policy: 'cross-origin' },
+      crossOriginOpenerPolicy: false,
+    }),
+  );
+  app.use(cookieParser());
+
+  // Belt + suspenders: also register via NestJS (handles non-OPTIONS requests)
+  app.enableCors({
+    origin: true,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+    exposedHeaders: ['Set-Cookie'],
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+  });
+
+  // ─── Global pipes ───
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -57,11 +71,11 @@ async function bootstrap() {
     }),
   );
 
-  // Global filters & interceptors
+  // ─── Global filters & interceptors ───
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalInterceptors(new TransformInterceptor());
 
-  // Swagger documentation
+  // ─── Swagger documentation ───
   const swaggerConfig = new DocumentBuilder()
     .setTitle('PulseMind AI API')
     .setDescription('Enterprise Employee Feedback & Organizational Intelligence Platform')
