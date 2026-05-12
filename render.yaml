@@ -6,7 +6,7 @@ services:
     plan: free
     rootDir: backend
     buildCommand: npm install && npx prisma generate && npm run build
-    startCommand: npx prisma db push && npm run seed:prod && npm run start:prod
+    startCommand: npx prisma db push && npm run start:prod
     envVars:
       - key: NODE_ENV
         value: production
