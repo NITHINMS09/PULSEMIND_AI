@@ -6,12 +6,19 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('🌱 Seeding PulseMind AI database (Phase 2)...');
 
-  // Idempotency check — skip if demo admin already exists
+  // Ensure demo admin exists and has correct password
+  const password = await argon2.hash('Demo@2024!');
   const existingAdmin = await prisma.user.findUnique({
     where: { email: 'admin@demo.pulsemind.ai' },
   });
+
   if (existingAdmin) {
-    console.log('✅ Demo data already seeded. Skipping to avoid data loss.');
+    console.log('Updating existing demo admin password...');
+    await prisma.user.update({
+      where: { email: 'admin@demo.pulsemind.ai' },
+      data: { password },
+    });
+    console.log('✅ Demo admin updated. Skipping rest of seed.');
     return;
   }
 
@@ -45,8 +52,6 @@ async function main() {
   await prisma.department.deleteMany();
   await prisma.organization.deleteMany();
   await prisma.systemSetting.deleteMany();
-
-  const password = await argon2.hash('Demo@2024!');
 
   // Organization
   const org = await prisma.organization.create({
